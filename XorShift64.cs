@@ -103,7 +103,7 @@ namespace B83.Random.XorShift64
                 return Next() % aRange;
             ulong v = Next();
             // avoid the last incomplete set
-            while (ulong.MaxValue - aRange < dif)
+            while (ulong.MaxValue - v < dif)
                 v = Next();
             return v % aRange;
         }
