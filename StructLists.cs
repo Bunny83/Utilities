@@ -179,10 +179,10 @@ namespace B83.StructLists
         {
             if (aIndex < 0 || aIndex > count || count == CAPACITY)
                 return false;
-            for (int i = count - 1; i >= aIndex; i--)
+            ++count;
+            for (int i = count - 2; i >= aIndex; i--)
                 this[i + 1] = this[i];
             this[aIndex] = aItem;
-            ++count;
             return true;
         }
 
@@ -385,10 +385,10 @@ namespace B83.StructLists
         {
             if (aIndex < 0 || aIndex > count || count == CAPACITY)
                 return false;
-            for (int i = count - 1; i >= aIndex; i--)
+            ++count;
+            for (int i = count - 2; i >= aIndex; i--)
                 this[i + 1] = this[i];
             this[aIndex] = aItem;
-            ++count;
             return true;
         }
 
@@ -659,10 +659,10 @@ namespace B83.StructLists
         {
             if (aIndex < 0 || aIndex > count || count == CAPACITY)
                 return false;
-            for (int i = count-1; i >=aIndex; i--)
+            ++count;
+            for (int i = count - 2; i >= aIndex; i--)
                 this[i+1] = this[i];
             this[aIndex] = aItem;
-            ++count;
             return true;
         }
 
