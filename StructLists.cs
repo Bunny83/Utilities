@@ -72,11 +72,11 @@ namespace B83.StructLists
         #region constructors
         public StructList4(T aE0, T aE1, T aE2, T aE3)
         {
-            e0 = aE0; e1 = aE1; e2 = aE2; e3 = aE3; count = 1;
+            e0 = aE0; e1 = aE1; e2 = aE2; e3 = aE3; count = 4;
         }
-        public StructList4(T aE0, T aE1, T aE2) : this(aE0, aE1, aE2, DEF) { }
-        public StructList4(T aE0, T aE1 ) : this(aE0, aE1, DEF, DEF) { }
-        public StructList4(T aE0) : this(aE0, DEF, DEF, DEF) { }
+        public StructList4(T aE0, T aE1, T aE2) : this(aE0, aE1, aE2, DEF) { count = 3; }
+        public StructList4(T aE0, T aE1 ) : this(aE0, aE1, DEF, DEF) { count = 2; }
+        public StructList4(T aE0) : this(aE0, DEF, DEF, DEF) { count = 1; }
         public StructList4(IList<T> aItems, int aOffset = 0)
         {
             int c = aItems.Count - aOffset;
@@ -245,19 +245,19 @@ namespace B83.StructLists
         public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7)
         {
             e0 = aE0; e1 = aE1; e2 = aE2; e3 = aE3; e4 = aE4; e5 = aE5; e6 = aE6; e7 = aE7;
-            count = 1;
+            count = 8;
         }
-        public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6) : this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, DEF) { }
-        public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5) : this(aE0, aE1, aE2, aE3, aE4, aE5, DEF, DEF) { }
-        public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4) : this(aE0, aE1, aE2, aE3, aE4, DEF, DEF, DEF) { }
+        public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6) : this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, DEF) { count = 7; }
+        public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5) : this(aE0, aE1, aE2, aE3, aE4, aE5, DEF, DEF) { count = 6; }
+        public StructList8(T aE0, T aE1, T aE2, T aE3, T aE4) : this(aE0, aE1, aE2, aE3, aE4, DEF, DEF, DEF) { count = 5; }
         public StructList8(T aE0, T aE1, T aE2, T aE3)
         {
             e0 = aE0; e1 = aE1; e2 = aE2; e3 = aE3; e4 = e5 = e6 = e7 = DEF;
-            count = 1;
+            count = 4;
         }
-        public StructList8(T aE0, T aE1, T aE2) : this(aE0, aE1, aE2, DEF ) { }
-        public StructList8(T aE0, T aE1) : this(aE0, aE1, DEF, DEF) { }
-        public StructList8(T aE0) : this(aE0, DEF, DEF, DEF) { }
+        public StructList8(T aE0, T aE1, T aE2) : this(aE0, aE1, aE2, DEF ) { count = 3; }
+        public StructList8(T aE0, T aE1) : this(aE0, aE1, DEF, DEF) { count = 2; }
+        public StructList8(T aE0) : this(aE0, DEF, DEF, DEF) { count = 1; }
         public StructList8(IList<T> aItems, int aOffset = 0)
         {
             int c = aItems.Count - aOffset;
@@ -453,35 +453,35 @@ namespace B83.StructLists
         {
             e0 = aE0; e1 = aE1; e2  = aE2;  e3  = aE3;  e4  = aE4;  e5  = aE5;  e6  = aE6;  e7  = aE7;
             e8 = aE8; e9 = aE9; e10 = aE10; e11 = aE11; e12 = aE12; e13 = aE13; e14 = aE14; e15 = aE15;
-            count = 1;
+            count = 16;
         }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8, T aE9, T aE10, T aE11, T aE12, T aE13, T aE14) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, aE12, aE13, aE14, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, aE12, aE13, aE14, DEF) { count = 15; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8, T aE9, T aE10, T aE11, T aE12, T aE13) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, aE12, aE13, DEF, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, aE12, aE13, DEF, DEF) { count = 14; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8, T aE9, T aE10, T aE11, T aE12) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, aE12, DEF, DEF, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, aE12, DEF, DEF, DEF) { count = 13; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8, T aE9, T aE10, T aE11) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, DEF, DEF, DEF, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, aE11, DEF, DEF, DEF, DEF) { count = 12; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8, T aE9, T aE10) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, DEF, DEF, DEF, DEF, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, aE10, DEF, DEF, DEF, DEF, DEF) { count = 11; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8, T aE9) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, DEF, DEF, DEF, DEF, DEF, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, aE9, DEF, DEF, DEF, DEF, DEF, DEF) { count = 10; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7, T aE8) :
-            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, DEF, DEF, DEF, DEF, DEF, DEF, DEF) { }
+            this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, aE7, aE8, DEF, DEF, DEF, DEF, DEF, DEF, DEF) { count = 9; }
         public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6, T aE7)
         {
             e0 = aE0; e1 = aE1; e2 = aE2; e3 = aE3; e4 = aE4; e5 = aE5; e6 = aE6; e7 = aE7;
             e8 = e9 = e10 = e11 = e12 = e13 = e14 = e15 = DEF;
-            count = 1;
+            count = 8;
         }
-        public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6) : this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, DEF) { }
-        public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5) : this(aE0, aE1, aE2, aE3, aE4, aE5, DEF, DEF) { }
-        public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4) : this(aE0, aE1, aE2, aE3, aE4, DEF, DEF, DEF) { }
-        public StructList16(T aE0, T aE1, T aE2, T aE3) : this(aE0, aE1, aE2, aE3, DEF, DEF, DEF, DEF) { }
-        public StructList16(T aE0, T aE1, T aE2) : this(aE0, aE1, aE2, DEF, DEF, DEF, DEF, DEF) { }
-        public StructList16(T aE0, T aE1) : this(aE0, aE1, DEF, DEF, DEF, DEF, DEF, DEF) { }
-        public StructList16(T aE0) : this(aE0, DEF, DEF, DEF, DEF, DEF, DEF, DEF) { }
+        public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5, T aE6) : this(aE0, aE1, aE2, aE3, aE4, aE5, aE6, DEF) { count = 7; }
+        public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4, T aE5) : this(aE0, aE1, aE2, aE3, aE4, aE5, DEF, DEF) { count = 6; }
+        public StructList16(T aE0, T aE1, T aE2, T aE3, T aE4) : this(aE0, aE1, aE2, aE3, aE4, DEF, DEF, DEF) { count = 5; }
+        public StructList16(T aE0, T aE1, T aE2, T aE3) : this(aE0, aE1, aE2, aE3, DEF, DEF, DEF, DEF) { count = 4; }
+        public StructList16(T aE0, T aE1, T aE2) : this(aE0, aE1, aE2, DEF, DEF, DEF, DEF, DEF) { count = 3; }
+        public StructList16(T aE0, T aE1) : this(aE0, aE1, DEF, DEF, DEF, DEF, DEF, DEF) { count = 2; }
+        public StructList16(T aE0) : this(aE0, DEF, DEF, DEF, DEF, DEF, DEF, DEF) { count = 1; }
         public StructList16(IList<T> aItems, int aOffset = 0)
         {
             int c = aItems.Count - aOffset;
