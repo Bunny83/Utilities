@@ -52,6 +52,7 @@ public class CSVParser
 
     public bool NextLine(List<string> aColumns)
     {
+        aColumns.Clear();
         int chn;
         m_Sb.Clear();
         while ((chn = m_Reader.Read()) != -1)
