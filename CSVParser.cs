@@ -117,7 +117,6 @@ public class CSVParser
                 file.Add(line.ToArray());
             else
                 --aLinesToSkip;
-            line.Clear();
         }
         return file.ToArray();
     }
