@@ -409,6 +409,16 @@ namespace B83.Compression
             }
         }
 
+        public static byte[] EncodeFromUTF8(string aData)
+        {
+            return Encode(Encoding.UTF8.GetBytes(aData));
+        }
+
+        public static string DecodeToUTF8(byte[] aData)
+        {
+            return Encoding.UTF8.GetString(Decode(aData));
+        }
+
         // EncodeStringToBase64 tries to huffman encode the input text and convert it
         // to base64. If the new length is smaller than the original text, it marks it
         // as "compressed" with a leading "$" otherwise it returns the unchanged text.
