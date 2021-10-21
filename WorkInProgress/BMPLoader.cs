@@ -403,7 +403,8 @@ namespace B83.Image.BMP
                         {
                             byte d2 = aReader.ReadByte();
                             data[x++ + yOffset] = bmp.palette[(d2 >> 4) & 0x0F];
-                            data[x++ + yOffset] = bmp.palette[d2 & 0x0F];
+                            if (x + 1 < w)
+                                data[x++ + yOffset] = bmp.palette[d2 & 0x0F];
                         }
                         if ((d & 0x01) > 0)
                         {
