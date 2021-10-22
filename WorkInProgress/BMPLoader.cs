@@ -24,6 +24,8 @@
 * 2017.02.05 - first version 
 * 2017.03.06 - Added RLE4 / RLE8 support
 * 2021.01.21 - Fixed RLE4 bug; Fixed wrongly reading bit masks for indexed images.
+* 2021.01.22 - Addes support for negative heights (top-down images) The actual
+*              flipping happens once at the Texture2D conversion.
 * 
 * Copyright (c) 2017 Markus Göbel (Bunny83)
 * 
@@ -109,10 +111,34 @@ namespace B83.Image.BMP
         public Texture2D ToTexture2D()
         {
             var tex = new Texture2D(info.absWidth, info.absHeight);
+            
+            if (info.height < 0)
+                FlipImage();
+            
             tex.SetPixels32(imageData);
             tex.Apply();
             return tex;
         }
+        // flip image if height is negative
+        internal void FlipImage()
+        {
+            if (info.height > 0)
+                return;
+            int w = info.absWidth;
+            int h = info.absHeight;
+            int h2 = h / 2;
+            for (int y = 0; y < h2; y++)
+            {
+                for(int x = 0, o1=y*w, o2=(h-y-1)*w; x < w; x++,o1++,o2++)
+                {
+                    var tmp = imageData[o1];
+                    imageData[o1] = imageData[o2];
+                    imageData[o2] = tmp;
+                }
+            }
+            info.height = h;
+        }
+
         public void ReplaceColor(Color32 aColorToSearch, Color32 aReplacementColor)
         {
             var s = aColorToSearch;
