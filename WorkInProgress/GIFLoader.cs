@@ -27,7 +27,6 @@
 * 
 *****/
 #endregion License and Information
-//#define ENABLE_DEBUG_LOGGING
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -95,6 +94,7 @@ namespace B83.Image.GIF
     {
         GIFGraphicControlExt graphicControl { get; set; }
         void DrawTo(Color32[] aData, int aWidth, int aHeight, int aXOffset = 0, int aYOffset = 0);
+        void Dispose(Color32[] aData, int aWidth, int aHeight, int aXOffset = 0, int aYOffset = 0);
     }
     #endregion Enums and interfaces
 
@@ -262,28 +262,31 @@ namespace B83.Image.GIF
 
             if (usedColorTable == null || data == null || aData == null)
                 return;
-            Debug.Log("Disposal: " + graphicControl.DisposalMethod);
             int trColor = -1;
-            int bgColor = -1;
+            int bgColorIndex = -1;
             bool useBKColor = graphicControl.DisposalMethod == EDisposalMethod.RestoreBackgroundColor;
 
             if (Parent.screen.HasGlobalColorTable)
             {
-                bgColor = Parent.screen.bgColorIndex;
+                bgColorIndex = Parent.screen.bgColorIndex;
             }
             if (graphicControl != null && graphicControl.HasTransparentColorIndex)
             {
+                
                 trColor = graphicControl.transparentColorIndex;
             }
             if (IsInterlaced)
                 CalcInterlacedLimits();
+            var bgColor = Parent.screen.globalColorTable[bgColorIndex];
+            if (Parent.BackgroundTransparent)
+                bgColor.a = 0;
             for (int y = 0; y < height; y++)
             {
                 int iy = y;
                 if (IsInterlaced)
                     iy = GetInterlacedIndex(iy);
                 iy = aHeight - iy - yPos - 1;
-                Debug.Log("yPos: " + iy);
+                //Debug.Log("yPos: " + iy);
                 for (int x = 0; x < width; x++)
                 {
                     int col = data[x + y * width];
@@ -291,13 +294,36 @@ namespace B83.Image.GIF
                     if (col == trColor)
                     {
                         if (useBKColor)
-                            aData[index] = usedColorTable[bgColor];
+                            //aData[index] = usedColorTable[bgColor];
+                            aData[index] = bgColor;
+                            
                         continue;
                     }
                     if (index >= 0 && index < aData.Length && col >= 0 && col < usedColorTable.Length)
                         aData[index] = usedColorTable[col];
                 }
             }
+        }
+        public void Dispose(Color32[] aData, int aWidth, int aHeight, int aXOffset, int aYOffset)
+        {
+            if (graphicControl.DisposalMethod == EDisposalMethod.RestoreBackgroundColor && Parent.screen.HasGlobalColorTable)
+            {
+                var col = Parent.screen.globalColorTable[Parent.screen.bgColorIndex];
+                if (Parent.BackgroundTransparent)
+                    col.a = 0;
+                for (int y = 0; y < height; y++)
+                {
+                    int iy = y;
+                    iy = aHeight - iy - yPos - 1;
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = xPos + aXOffset + x + (iy + aYOffset) * aWidth;
+                        aData[index] = col;
+                    }
+                }
+
+            }
+
         }
     }
     public class GIFTextBlock : IGIFRenderingBlock, IGIFExtension
@@ -319,6 +345,11 @@ namespace B83.Image.GIF
         {
             throw new NotImplementedException();
         }
+        public void Dispose(Color32[] aData, int aWidth, int aHeight, int aXOffset, int aYOffset)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
     public class GIFCommentBlock : IGIFExtension, IGIFBlock
@@ -349,6 +380,7 @@ namespace B83.Image.GIF
 
     public class GIFImage
     {
+        public bool BackgroundTransparent = false;
         public GIFHeader header;
         public GIFScreenDescriptor screen;
         public List<IGIFBlock> data = new List<IGIFBlock>();
@@ -381,6 +413,7 @@ namespace B83.Image.GIF
                     tex.Apply();
                     aOnUpdate(tex);
                     yield return new WaitForSeconds(b.graphicControl.fdelay);
+                    b.Dispose(colors, w, h);
                 }
             }
             while (aRepeat);
@@ -391,32 +424,9 @@ namespace B83.Image.GIF
     {
         byte[] buf = new byte[255];
         GIFGraphicControlExt lastGrCtrl = null;
-        private static TextWriter log2;
-
-        [System.Diagnostics.Conditional("ENABLE_DEBUG_LOGGING")]
-        public static void Log(string aText)
-        {
-#if ENABLE_DEBUG_LOGGING
-            log2.WriteLine(aText);
-            log2.Flush();
-#endif
-        }
-
-        public GIFLoader()
-        {
-#if ENABLE_DEBUG_LOGGING
-            log2 = new System.IO.StreamWriter("C:\\Data\\Log.txt");
-            Log("GIFLoader created");
-#endif
-        }
-        ~GIFLoader()
-        {
-            log2.Close();
-        }
 
         public GIFImage Load(string aFileName)
         {
-            Log("loading ... " + aFileName);
             using (var stream = File.OpenRead(aFileName))
                 return Load(stream);
         }
@@ -440,7 +450,6 @@ namespace B83.Image.GIF
                 Debug.LogWarning("Error reading GIF screen descriptor or global color table");
                 return null;
             }
-            Log("Header read completed");
             while (true)
             {
                 var block = ReadBlock(aReader, img);
@@ -471,19 +480,20 @@ namespace B83.Image.GIF
                 img.screen.globalColorTable = ReadColorTable(aReader, img.screen.SizeOfGlobalColorTable);
             else
                 img.screen.globalColorTable = null;
+            if (img.screen.globalColorTable != null)
+                Debug.Log("GBackground: " + img.screen.bgColorIndex+" = " + img.screen.globalColorTable[img.screen.bgColorIndex]);
             return img.screen.HasGlobalColorTable ^ img.screen.globalColorTable == null;
         }
 
         private IGIFBlock ReadBlock(BinaryReader aReader, GIFImage aImage)
         {
             byte blockType = aReader.ReadByte();
-            Log("New block: " + ((EBlockType)blockType));
             switch ((EBlockType)blockType)
             {
                 case EBlockType.Extension: return ReadExtension(aReader);
                 case EBlockType.ImageDescriptor: return ReadImage(aReader, aImage);
                 case EBlockType.Trailer: return null;
-                default: throw new System.NotSupportedException("Encountered unknown GIF block type: 0x" + blockType.ToString("xx"));
+                default: throw new System.NotSupportedException("Encountered unknown GIF block type: 0x" + blockType.ToString("x2")+" at " +aReader.BaseStream.Position);
             }
         }
 
@@ -491,7 +501,6 @@ namespace B83.Image.GIF
         private IGIFBlock ReadExtension(BinaryReader aReader)
         {
             byte extType = aReader.ReadByte();
-            Log("Read extension: " + ((EExtensionType)extType));
             switch ((EExtensionType)extType)
             {
                 case EExtensionType.GraphicControl: return ReadGraphicControlBlock(aReader);
@@ -500,7 +509,7 @@ namespace B83.Image.GIF
                 case EExtensionType.Application: return ReadApplicationBlock(aReader);
                 default:
                     {
-                        Debug.LogWarning("Encountered unknown extension type: 0x" + extType.ToString("xx"));
+                        Debug.LogWarning("Encountered unknown extension type: 0x" + extType.ToString("x2") + " at " + aReader.BaseStream.Position);
                         return ReadGenericExtension(aReader, extType);
                     }
             }
@@ -616,7 +625,7 @@ namespace B83.Image.GIF
             res.transparentColorIndex = aReader.ReadByte();
             byte nullByte = aReader.ReadByte();
             if (nullByte != 0)
-                throw new Exception("GIF: GraphicControl extension block not terminated with '0x00' (found:0x" + nullByte.ToString("xx") + ")");
+                throw new Exception("GIF: GraphicControl extension block not terminated with '0x00' (found:0x" + nullByte.ToString("x2") + ")");
             lastGrCtrl = res;
             return res;
         }
@@ -631,7 +640,6 @@ namespace B83.Image.GIF
             res.flags = (EImageDescriptorFlags)aReader.ReadByte();
             if (res.HasLocalColorTable)
             {
-                Log("Read local color table: " + res.SizeOfLocalColorTable);
                 res.usedColorTable =
                 res.colorTable = ReadColorTable(aReader, res.SizeOfLocalColorTable);
             }
@@ -645,7 +653,11 @@ namespace B83.Image.GIF
                 res.graphicControl = lastGrCtrl;
                 lastGrCtrl = null;
             }
-            Log("Start LZW");
+            // use the common method of ignoring the background color if the first frame has a transparent color
+            if (res.graphicControl.HasTransparentColorIndex && aImage.imageData.Count == 0)
+            {
+                aImage.BackgroundTransparent = true;
+            }
             ReadLZWImage(aReader, res);
             return res;
         }
@@ -676,19 +688,12 @@ namespace B83.Image.GIF
                     dict.lastCode = code;
                 }
             }
-            if (!bitReader.EndOfData)
+            while (!bitReader.EndOfData)
             {
-                byte tmp = 1;
-                while (tmp != 0 && aReader.BaseStream.Position < aReader.BaseStream.Length)
-                    tmp = aReader.ReadByte();
+                bitReader.ReadBit();
             }
             res.packedSize = (int)(aReader.BaseStream.Position - startPos);
             res.data = output;
-            Log("Image Data:" + output.Count + " (packed: " + res.packedSize + ")");
-            Log("X: " + res.xPos + "  Y: " + res.yPos);
-            Log("W: " + res.width + "  H: " + res.height);
-            Log("interlaced: " + res.IsInterlaced);
-            Log("---");
         }
 
         private Color32[] ReadColorTable(BinaryReader aReader, int aColorCount)
