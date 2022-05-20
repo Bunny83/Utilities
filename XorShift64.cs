@@ -87,7 +87,7 @@ namespace B83.Random.XorShift64
         }
         public int Range(int aMin, int aMax)
         {
-            return aMin + (int)Next() % (aMax - aMin);
+            return (int)((long)aMin + (uint)Next() % (uint)((long)aMax - (long)aMin));
         }
         public double Range(double aMin, double aMax)
         {
