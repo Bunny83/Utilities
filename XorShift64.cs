@@ -36,6 +36,7 @@
 
 namespace B83.Random.XorShift64
 {
+    using System.Runtime.CompilerServices;
     public class RandomXor64
     {
         protected static ulong SEED_OFFSET = 13726359678912485784UL;
@@ -68,6 +69,7 @@ namespace B83.Random.XorShift64
             seed = aSeed;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong Next()
         {
             // https://en.wikipedia.org/wiki/Xorshift#xorshift.2A
@@ -76,19 +78,28 @@ namespace B83.Random.XorShift64
             state ^= state >> 27;
             return state * 2685821657736338717UL; // 0x2545F4914F6CDD1DUL
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double NextDouble()
         {
             return (double)Next() * DOUBLE_MUL;
 
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong Range(ulong aMin, ulong aMax)
         {
             return aMin + Next() % (aMax - aMin);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Range(int aMin, int aMax)
         {
-            return (int)((long)aMin + (uint)Next() % (uint)((long)aMax - (long)aMin));
+            return (int)Range((long)aMin, (long)aMax);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public long Range(long aMin, long aMax)
+        {
+            return aMin + (long)(Next() % (ulong)(aMax - aMin));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double Range(double aMin, double aMax)
         {
             return aMin + NextDouble() * (aMax - aMin);
