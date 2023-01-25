@@ -749,7 +749,7 @@ namespace B83.UVViewer
 
         void DrawVertex(int aIndex, ref Matrix4x4 M)
         {
-            Vector3 normal = m_Normals[aIndex];
+            Vector3 normal = M.MultiplyVector(m_Normals[aIndex]);
             Vector3 vertPos = M.MultiplyPoint(m_Vertices[aIndex]);
             float size = HandleUtility.GetHandleSize(vertPos);
             Handles.ArrowHandleCap(-1, vertPos, Quaternion.LookRotation(normal), size * 0.5f, EventType.Repaint);
