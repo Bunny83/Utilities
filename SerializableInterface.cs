@@ -60,11 +60,13 @@ public class SerializableInterface<T> where T : class
 #if UNITY_EDITOR
 namespace B83.Editor.PropertyDrawers
 {
+    using System.Collections.Generic;
     using UnityEditor;
     [CustomPropertyDrawer(typeof(SerializableInterface<>),true)]
     public class SerializableInterfacePropertyDrawer : PropertyDrawer
     {
         private System.Type m_GenericType = null;
+        private List<Component> m_List = new List<Component>();
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (m_GenericType == null)
@@ -82,8 +84,25 @@ namespace B83.Editor.PropertyDrawers
                     obj.objectReferenceValue = null;
                 else if (m_GenericType.IsAssignableFrom(newObj.GetType()))
                     obj.objectReferenceValue = newObj;
-                else if (newObj is GameObject go && go.TryGetComponent(m_GenericType, out var inst))
-                    obj.objectReferenceValue = inst;
+                else if (newObj is GameObject go)
+                {
+                    m_List.Clear();
+                    go.GetComponents(m_GenericType, m_List);
+                    if (m_List.Count == 1)
+                        obj.objectReferenceValue = m_List[0];
+                    else
+                    {
+                        GenericMenu m = new GenericMenu();
+                        int n = 1;
+                        foreach(var item in m_List)
+                            m.AddItem(new GUIContent((n++).ToString()+" " + item.GetType().Name), false, a => {
+                                obj.objectReferenceValue = (Object)a;
+                                obj.serializedObject.ApplyModifiedProperties();
+                                Debug.Log("Selected: " + a);
+                            }, item);
+                        m.ShowAsContext();
+                    }
+                }
                 else
                     Debug.LogWarning("Dragged object is not compatible with " + m_GenericType.Name);
             }
