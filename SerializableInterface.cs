@@ -98,7 +98,6 @@ namespace B83.Editor.PropertyDrawers
                             m.AddItem(new GUIContent((n++).ToString()+" " + item.GetType().Name), false, a => {
                                 obj.objectReferenceValue = (Object)a;
                                 obj.serializedObject.ApplyModifiedProperties();
-                                Debug.Log("Selected: " + a);
                             }, item);
                         m.ShowAsContext();
                     }
