@@ -58,11 +58,11 @@ public class SerializableInterface<T> where T : class
 }
 
 #if UNITY_EDITOR
-namespace B83.Editor.PropertyDrawers
+namespace B83.EditorPropertyDrawers
 {
     using System.Collections.Generic;
     using UnityEditor;
-    [CustomPropertyDrawer(typeof(SerializableInterface<>),true)]
+    [CustomPropertyDrawer(typeof(SerializableInterface<>), true)]
     public class SerializableInterfacePropertyDrawer : PropertyDrawer
     {
         private System.Type m_GenericType = null;
@@ -71,7 +71,19 @@ namespace B83.Editor.PropertyDrawers
         {
             if (m_GenericType == null)
             {
-                var types = fieldInfo.FieldType.GetGenericArguments();
+                System.Type fieldType = fieldInfo.FieldType;
+                if (fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    // when used in a List<>, grab the actual type from the generic argument of the List
+                    fieldType = fieldInfo.FieldType.GetGenericArguments()[0];
+                }
+                else if (fieldType.IsArray)
+                {
+                    // when used in an array, grab the actual type from the element type.
+                    fieldType = fieldType.GetElementType();
+                }
+
+                var types = fieldType.GetGenericArguments();
                 if (types != null && types.Length == 1)
                     m_GenericType = types[0];
             }
@@ -94,8 +106,8 @@ namespace B83.Editor.PropertyDrawers
                     {
                         GenericMenu m = new GenericMenu();
                         int n = 1;
-                        foreach(var item in m_List)
-                            m.AddItem(new GUIContent((n++).ToString()+" " + item.GetType().Name), false, a => {
+                        foreach (var item in m_List)
+                            m.AddItem(new GUIContent((n++).ToString() + " " + item.GetType().Name), false, a => {
                                 obj.objectReferenceValue = (Object)a;
                                 obj.serializedObject.ApplyModifiedProperties();
                             }, item);
