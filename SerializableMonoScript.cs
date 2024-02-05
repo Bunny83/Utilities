@@ -120,9 +120,20 @@ namespace B83
             {
                 if (m_FilterType == null)
                 {
-                    if (fieldInfo.FieldType.IsGenericType)
+                    System.Type fieldType = fieldInfo.FieldType;
+                    if (fieldType.IsGenericType && fieldType.GetGenericTypeDefinition() == typeof(List<>))
                     {
-                        var types = fieldInfo.FieldType.GetGenericArguments();
+                        // when used in a List<>, grab the actual type from the generic argument of the List
+                        fieldType = fieldInfo.FieldType.GetGenericArguments()[0];
+                    }
+                    else if (fieldType.IsArray)
+                    {
+                        // when used in an array, grab the actual type from the element type.
+                        fieldType = fieldType.GetElementType();
+                    }
+                    if (fieldType.IsGenericType)
+                    {
+                        var types = fieldType.GetGenericArguments();
                         if (types != null && types.Length == 1)
                             m_FilterType = types[0];
                     }
