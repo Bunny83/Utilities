@@ -42,11 +42,13 @@ public class SerializableInterface<T> where T : class
         if (m_Instance == null || (object)m_Instance != obj)
         {
             if (obj == null)
-                m_Instance = null;
+                SetInstance(null);
             else if (obj is T inst)
                 m_Instance = inst;
-            else if (obj != null && obj is GameObject go && go.TryGetComponent<T>(out inst))
+            else if (obj is GameObject go && go.TryGetComponent<T>(out inst))
                 m_Instance = inst;
+            else
+                SetInstance(null);
         }
         return m_Instance;
     }
